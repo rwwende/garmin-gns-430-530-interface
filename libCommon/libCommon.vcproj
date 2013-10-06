@@ -152,6 +152,22 @@
 			>
 		</File>
 		<File
+			RelativePath=".\crcfile.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\crcfile.h"
+			>
+		</File>
+		<File
+			RelativePath=".\injector.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\injector.h"
+			>
+		</File>
+		<File
 			RelativePath=".\log.cpp"
 			>
 		</File>

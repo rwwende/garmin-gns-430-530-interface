@@ -3,6 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libCommon", "libCommon\libCommon.vcproj", "{4D107B5C-2707-4C09-AF80-B11F0A17931F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gnsInterface", "gnsInterface\gnsInterface.vcproj", "{4136E1F0-3BFB-4F37-B46E-32A95C1233D1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D107B5C-2707-4C09-AF80-B11F0A17931F} = {4D107B5C-2707-4C09-AF80-B11F0A17931F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gnsTest1", "gnsTest1\gnsTest1.vcproj", "{FAAC69AD-FC3C-3A28-B854-8627368EB0D2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D107B5C-2707-4C09-AF80-B11F0A17931F} = {4D107B5C-2707-4C09-AF80-B11F0A17931F}
+		{392D54F6-46C7-4115-8C84-448507A9426A} = {392D54F6-46C7-4115-8C84-448507A9426A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGnsProxy", "libGnsProxy\libGnsProxy.vcproj", "{392D54F6-46C7-4115-8C84-448507A9426A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +26,18 @@ Global
 		{4D107B5C-2707-4C09-AF80-B11F0A17931F}.Debug|Win32.Build.0 = Debug|Win32
 		{4D107B5C-2707-4C09-AF80-B11F0A17931F}.Release|Win32.ActiveCfg = Release|Win32
 		{4D107B5C-2707-4C09-AF80-B11F0A17931F}.Release|Win32.Build.0 = Release|Win32
+		{4136E1F0-3BFB-4F37-B46E-32A95C1233D1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4136E1F0-3BFB-4F37-B46E-32A95C1233D1}.Debug|Win32.Build.0 = Debug|Win32
+		{4136E1F0-3BFB-4F37-B46E-32A95C1233D1}.Release|Win32.ActiveCfg = Release|Win32
+		{4136E1F0-3BFB-4F37-B46E-32A95C1233D1}.Release|Win32.Build.0 = Release|Win32
+		{FAAC69AD-FC3C-3A28-B854-8627368EB0D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FAAC69AD-FC3C-3A28-B854-8627368EB0D2}.Debug|Win32.Build.0 = Debug|Win32
+		{FAAC69AD-FC3C-3A28-B854-8627368EB0D2}.Release|Win32.ActiveCfg = Release|Win32
+		{FAAC69AD-FC3C-3A28-B854-8627368EB0D2}.Release|Win32.Build.0 = Release|Win32
+		{392D54F6-46C7-4115-8C84-448507A9426A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{392D54F6-46C7-4115-8C84-448507A9426A}.Debug|Win32.Build.0 = Debug|Win32
+		{392D54F6-46C7-4115-8C84-448507A9426A}.Release|Win32.ActiveCfg = Release|Win32
+		{392D54F6-46C7-4115-8C84-448507A9426A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

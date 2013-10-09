@@ -2,7 +2,7 @@
 #define INJECTOR_H
 #include <windows.h>
 
-int startAndInject(TCHAR* pExeName, TCHAR* pExePath, TCHAR* pLibFile);
+int startAndInject(char* pExeName, char* pExePath, char* pLibFile);
 int checkProcessTerminated();
 
 #endif

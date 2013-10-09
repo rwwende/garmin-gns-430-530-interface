@@ -124,7 +124,7 @@ bool RedirectIAT( SDLLHook* DLLHook, PIMAGE_IMPORT_DESCRIPTOR pImportDesc, PVOID
         {
             PIMAGE_IMPORT_BY_NAME pImportName = MakePtr( PIMAGE_IMPORT_BY_NAME, pBaseLoadAddr, pINT->u1.AddressOfData );
 
-			logMessageEx("--- pImportName=%s", (char*)pImportName->Name);
+			//logMessageEx("--- pImportName=%s", (char*)pImportName->Name);
 			char* importName = (char*)pImportName->Name ;
 
             // Iterate through the hook functions, searching for this import.
@@ -261,11 +261,11 @@ bool HookAPICallsMod( SDLLHook* Hook , HMODULE mod)
 
         PSTR pszImportModuleName = MakePtr( PSTR, hModEXE, pImportDesc->Name);
 
-		logMessageEx("--- Module %s in module 0x%08x", pszImportModuleName, hModEXE);
+		//logMessageEx("--- Module %s in module 0x%08x", pszImportModuleName, hModEXE);
 
         if ( lstrcmpi( pszImportModuleName, Hook->Name ) == 0 )
         {
-			logMessageEx("--- Found %s in module 0x%08x", Hook->Name, hModEXE);
+			//logMessageEx("--- Found %s in module 0x%08x", Hook->Name, hModEXE);
 
             RedirectIAT( Hook, pImportDesc, (PVOID)hModEXE );
         }

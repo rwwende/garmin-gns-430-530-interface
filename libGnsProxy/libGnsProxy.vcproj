@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="libCommon"
-	ProjectGUID="{4D107B5C-2707-4C09-AF80-B11F0A17931F}"
-	RootNamespace="libCommon"
+	Name="libGnsProxy"
+	ProjectGUID="{392D54F6-46C7-4115-8C84-448507A9426A}"
+	RootNamespace="libGnsProxy"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -41,6 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\libCommon;..\gnsInterface"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;$(NOINHERIT)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -104,6 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\libCommon;..\gnsInterface"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;$(NOINHERIT)"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -144,43 +146,11 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\apihijack.cpp"
+			RelativePath=".\gnsx30proxy.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\apihijack.h"
-			>
-		</File>
-		<File
-			RelativePath=".\config.h"
-			>
-		</File>
-		<File
-			RelativePath=".\crcfile.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\crcfile.h"
-			>
-		</File>
-		<File
-			RelativePath=".\injector.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\injector.h"
-			>
-		</File>
-		<File
-			RelativePath=".\log.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\log.h"
-			>
-		</File>
-		<File
-			RelativePath=".\sharedstruct.h"
+			RelativePath=".\gnsx30proxy.h"
 			>
 		</File>
 	</Files>

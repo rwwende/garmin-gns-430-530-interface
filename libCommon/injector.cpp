@@ -83,11 +83,11 @@ temp:
 
 // returns true if everything went fine
 // if the function succeeds pdwReturn is the return value of LoadLibraryA in the remote process
-BOOL CodeCaveInjectDll(IN TCHAR* szDllPath, /*IN DWORD dwProcessId,*/ HANDLE hProcess, /*IN DWORD dwThreadId,*/ HANDLE hThread, OUT PDWORD pdwReturn)
+BOOL CodeCaveInjectDll(IN char* szDllPath, /*IN DWORD dwProcessId,*/ HANDLE hProcess, /*IN DWORD dwThreadId,*/ HANDLE hThread, OUT PDWORD pdwReturn)
 {
     BOOL bRet = FALSE;
 
-    SIZE_T DllPath_size = sizeof(TCHAR) * (_tcslen(szDllPath) + 1);
+    SIZE_T DllPath_size = sizeof(char) * (_tcslen(szDllPath) + 1);
 
     // get size of loader code
     DWORD dwSizeLoader = (DWORD)SearchDWORD(loader, LDR_CODE_END) - (DWORD)loader;
@@ -240,7 +240,7 @@ DWORD GetMainThreadId(IN DWORD dwProcessId)
 // if bFullPath is FALSE and modulename is not unique func will return (DWORD)-1
 // if a module with given modulename / path was not found in target process func will return 0 otherwise module handle
 // lowercase / uppercase doesn't matter
-DWORD GetModule(IN DWORD dwProcessId, IN TCHAR* szModuleNameOrPath, IN BOOL bFullPath)
+DWORD GetModule(IN DWORD dwProcessId, IN char* szModuleNameOrPath, IN BOOL bFullPath)
 {
     DWORD dwRet = 0;
     DWORD dwCount = 0;
@@ -258,7 +258,7 @@ DWORD GetModule(IN DWORD dwProcessId, IN TCHAR* szModuleNameOrPath, IN BOOL bFul
         {
             //PCHAR szCompare = me.szExePath;
             //USES_CONVERSION;
-            TCHAR* szCompare = me.szExePath;
+            char* szCompare = me.szExePath;
             //CHAR szCompare[260];// = me.szExePath;
             
             //strcpy(szCompare, T2A(me.szExePath));
@@ -292,22 +292,23 @@ DWORD GetModule(IN DWORD dwProcessId, IN TCHAR* szModuleNameOrPath, IN BOOL bFul
 }
 
 
-int startAndInject(TCHAR* pExeName, TCHAR* pExePath, TCHAR* pLibFile/*, Logger* pLogger, LPVOID env*/)
+int startAndInject(char* pExeName, char* pExePath, char* pLibFile)
 {
     BOOL bFullPath = FALSE;
 
     gbInjecting = true;
 
     //
-/* CreateProcess API initialization */
+    /* CreateProcess API initialization */
     STARTUPINFO siStartupInfo;
     PROCESS_INFORMATION piProcessInfo;
     memset(&siStartupInfo, 0, sizeof(siStartupInfo));
     memset(&piProcessInfo, 0, sizeof(piProcessInfo));
     siStartupInfo.cb = sizeof(siStartupInfo); 
+    siStartupInfo.dwFlags = STARTF_USESHOWWINDOW;
+    siStartupInfo.wShowWindow = SW_HIDE;
     
     
-    //CreateProcess(pExeName, NULL,
     CreateProcess(NULL, pExeName,
                              0, 0, false,
                             CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT, 

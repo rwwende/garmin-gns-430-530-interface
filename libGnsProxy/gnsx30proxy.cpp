@@ -3,19 +3,38 @@
 #include <windows.h>
 
 #include "gnsx30proxy.h"
+#include "udpsocketthread.h"
+#include "udpsocket.h"
 #include "injector.h"
 #include "crcfile.h"
 #include "log.h"
 #include "config.h"
 
 
+void UdpDataCallback(void* pData, int dataSize, void* context)
+{
+    GNSx30Proxy* pGNSx30Proxy = (GNSx30Proxy*)context;
+    pGNSx30Proxy->processUdpData(pData, dataSize);
+
+}
+
 GNSx30Proxy::GNSx30Proxy()
 {
-
     
 	m_pCRCFile = new CRCFile();
 
 	m_win = NULL;
+
+    m_pServerSocketThread = NULL;
+    m_pClientSocket = NULL;
+
+    //Default frquencies
+    m_comActive = 134100;
+    m_comStandby = 130825;
+    m_navActive = 108700;
+    m_navStandby = 111450;
+
+    m_state = stateTerminated;
 
 }
 
@@ -23,15 +42,35 @@ GNSx30Proxy::GNSx30Proxy()
 GNSx30Proxy::~GNSx30Proxy()
 {
 	delete m_pCRCFile;
+
+    if(stateOpened == m_state)
+    {
+        close();
+    }
+
+    if(stateInitialized == m_state)
+    {
+        terminate();
+    }
+
+
 }
 
 
 
-int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
+bool GNSx30Proxy::initialize(bool hideGUI)
 {
-	int res = 0;
+	bool res = true;
+
+    if(stateTerminated != m_state)
+    {
+        res = false;
+        return res;
+    }
 	
 	m_win = NULL; 
+
+    m_hideGUI = hideGUI;
 
 	//find the trainer path and copy the G530SIM.exe to th appropriate executable
 	{
@@ -54,7 +93,7 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 		if(ERROR_SUCCESS != lResult)
 		{
 			logMessageEx("??? GNSx30Proxy::Initialize Error opening key " G530SIMEXE_PATH);
-			res = -1;
+			res = false;
 			return res;
 		}
 
@@ -66,7 +105,7 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 		{
 			logMessageEx("??? GNSx30Proxy::Initialize Error reading key " G530SIMEXE_PATH);
 
-			res = -1;
+			res = false;
 			return res;
 		}
 
@@ -95,9 +134,9 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 			strcat(szG530SIMFileName, "\\G530SIM.exe");
 		   if(!CopyFile(szG530SIMFileName,m_trainter_exe,FALSE))
 		   {
-				logMessageEx("??? GNSx30Proxy::Initialize Error copying file %s", szG530SIMFileName);
+			   logMessageEx("??? GNSx30Proxy::Initialize Error copying file %s", szG530SIMFileName);
 
-			   res = -1;
+			   res = false;
 			   return res;
 		   }
 	   }
@@ -106,7 +145,7 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 		if(!m_pCRCFile->calcCRC(m_trainter_exe, &CRCVal))
 		{
 			logMessageEx("??? GNSx30Proxy::Initialize Error calculating CRC");
-			res = -1;
+			res = false;
 			return res;
 		}
 
@@ -118,7 +157,7 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 
 			//Delete the copied file
 			//DeleteFile(m_trainter_exe);
-			res = -1;
+			res = false;
 			return res;
 		}
 
@@ -130,6 +169,7 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 		HKEY hKey;
 		DWORD dwSize = MAX_PATH;
 		DWORD dwValue;
+        DWORD dwValue1;
 		DWORD dwDisposition;
 
 
@@ -139,7 +179,7 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 		{
 			   logMessageEx("??? GNSx30Proxy::Initialize Error creating key " GARMIN_INTERNATIONAL);
 
-			   res = -1;
+			   res = false;
 			   return res;
 		}
 
@@ -149,10 +189,11 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 		{
      		   logMessageEx("??? GNSx30Proxy::Initialize Error creating key " GARMIN_INTERNATIONAL_SETTINGS);
 
-			   res = -1;
+			   res = false;
 			   return res;
 		}
 
+#if 0
 		//Create the trainer settings values
 		if (ERROR_SUCCESS != RegSetValueEx(hKey, "CDUType", 0, REG_SZ, (LPBYTE)GNS_530AWT, strlen(GNS_530AWT) + 1))
 		{
@@ -161,7 +202,7 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 			   res = -1;
 			   return res;
 		}
-
+#endif
 
 		RegFlushKey(hKey);
 		RegCloseKey(hKey);
@@ -173,36 +214,44 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 		{
 			logMessageEx("??? GNSx30Proxy::Initialize Error creating key " GARMIN_INTERNATIONAL_WINDOW);
 
-			   res = -1;
+			   res = false;
 			   return res;
 		}
 
+        dwValue = 50;
 
+        if(m_hideGUI)
+        {
+            dwValue = 10000;  
+        }
         //Create the window position values
-		dwValue = 5000;
-		if (ERROR_SUCCESS != RegSetValueEx(hKey, "x1", 0, REG_DWORD, (LPBYTE)&dwValue, sizeof(dwValue)))
-		{
-				logMessageEx("??? GNSx30Proxy::Initialize Error writing key " GARMIN_INTERNATIONAL_WINDOW);
+        if (ERROR_SUCCESS != RegSetValueEx(hKey, "x1", 0, REG_DWORD, (LPBYTE)&dwValue, sizeof(dwValue)))
+        {
+            logMessageEx("??? GNSx30Proxy::Initialize Error writing key " GARMIN_INTERNATIONAL_WINDOW);
 
-			   res = -1;
-			   return res;
-		}
-		if (ERROR_SUCCESS != RegSetValueEx(hKey, "x2", 0, REG_DWORD, (LPBYTE)&dwValue, sizeof(dwValue)))
+            res = false;
+            return res;
+        }
+
+        if (ERROR_SUCCESS != RegSetValueEx(hKey, "y1", 0, REG_DWORD, (LPBYTE)&dwValue, sizeof(dwValue)))
+        {
+            logMessageEx("??? GNSx30Proxy::Initialize Error writing key " GARMIN_INTERNATIONAL_WINDOW);
+            res = false;
+            return res;
+        }
+
+        dwValue1 = dwValue + 480;
+		if (ERROR_SUCCESS != RegSetValueEx(hKey, "x2", 0, REG_DWORD, (LPBYTE)&dwValue1, sizeof(dwValue1)))
 		{
 			logMessageEx("??? GNSx30Proxy::Initialize Error writing key " GARMIN_INTERNATIONAL_WINDOW);
-			   res = -1;
+			   res = false;
 			   return res;
 		}
-		if (ERROR_SUCCESS != RegSetValueEx(hKey, "y1", 0, REG_DWORD, (LPBYTE)&dwValue, sizeof(dwValue)))
+        dwValue1 = dwValue + 630;
+		if (ERROR_SUCCESS != RegSetValueEx(hKey, "y2", 0, REG_DWORD, (LPBYTE)&dwValue1, sizeof(dwValue1)))
 		{
 			logMessageEx("??? GNSx30Proxy::Initialize Error writing key " GARMIN_INTERNATIONAL_WINDOW);
-			   res = -1;
-			   return res;
-		}
-		if (ERROR_SUCCESS != RegSetValueEx(hKey, "y2", 0, REG_DWORD, (LPBYTE)&dwValue, sizeof(dwValue)))
-		{
-			logMessageEx("??? GNSx30Proxy::Initialize Error writing key " GARMIN_INTERNATIONAL_WINDOW);
-			   res = -1;
+			   res = false;
 			   return res;
 		}
 		RegFlushKey(hKey);
@@ -220,31 +269,69 @@ int GNSx30Proxy::initialize(/*int type,  GNSInfo* pInfo*/)
 	memset(m_pvData->LDC_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
     memset(m_pvData->Bezel_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
 
+    m_state = stateInitialized;
+
 	return res;
 }
 
-int GNSx30Proxy::terminate()
+bool GNSx30Proxy::terminate()
 {
-	int res = 0;
+	bool res = true;
+
+    if(stateInitialized != m_state)
+    {
+        res = false;
+        return res;
+    }
 
 	delete 	m_pShared; 
     m_pvData = NULL;
-
+    
+    m_state = stateTerminated;
 
 	return res;
 
 }
 
 
-int GNSx30Proxy::open(int gnsType)
+bool GNSx30Proxy::open(int gnsType)
 {
-	int res = 0;
+	bool res = true;
+
+    if(stateInitialized != m_state)
+    {
+        res = false;
+        return res;
+    }
 
 
     HKEY hKey;
     DWORD dwDisposition;
 
+    //Default frquencies
+    m_comActive = 134100;
+    m_comStandby = 130825;
+    m_navActive = 108700;
+    m_navStandby = 111450;
+
+
     m_pvData->gnsType = gnsType;
+
+#pragma warning FIXME
+    m_pvData->garminTrainerPort = 5000;
+    m_pvData->proxyPort = 5001;
+
+
+    //Start the serverThread
+    m_pServerSocketThread = new UdpSocketThread(m_pvData->proxyPort);
+    m_pServerSocketThread->create();
+    m_pServerSocketThread->setCallback(UdpDataCallback, this);
+    m_pServerSocketThread->resume();
+    
+
+    m_pClientSocket  = new UdpSocket();
+    m_pClientSocket->openForSending("127.0.0.1", m_pvData->garminTrainerPort);
+
 
     if (ERROR_SUCCESS!= RegCreateKeyEx(HKEY_CURRENT_USER, GARMIN_INTERNATIONAL_SETTINGS, 0, NULL, 
         REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey,&dwDisposition)
@@ -252,7 +339,7 @@ int GNSx30Proxy::open(int gnsType)
     {
         logMessageEx("??? GNSx30Proxy::open Error creating key " GARMIN_INTERNATIONAL_SETTINGS);
 
-        res = -1;
+        res = false;
         return res;
     }
 
@@ -264,7 +351,7 @@ int GNSx30Proxy::open(int gnsType)
         {
             logMessageEx("??? GNSx30Proxy::open Error writing key CDUType");
 
-            res = -1;
+            res = false;
             return res;
         }
     }else if(TYPE_GNS530 == gnsType)
@@ -274,7 +361,7 @@ int GNSx30Proxy::open(int gnsType)
         {
             logMessageEx("??? GNSx30Proxy::open Error writing key CDUType");
 
-            res = -1;
+            res = false;
             return res;
         }
     }
@@ -287,7 +374,7 @@ int GNSx30Proxy::open(int gnsType)
 
 	memset(m_pvData->LDC_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
 
-    startAndInject(m_trainter_exe, m_trainter_path, m_interface_lib);
+    startAndInject(m_trainter_exe, m_trainter_path, m_interface_lib, m_hideGUI);
     
 
 
@@ -310,20 +397,28 @@ int GNSx30Proxy::open(int gnsType)
 	if(!procesStarted)
 	{
 		logMessageEx("??? GNSx30Proxy::Open Error starting process %s", m_trainter_exe);
-		res = -1;
+		res = false;
 		return res;
 
 	}
 
 
+    m_state = stateOpened;
+
 	return res;
 
 }
 
-int GNSx30Proxy::close()
+bool GNSx30Proxy::close()
 {
-	int res = 0;
+	bool res = true;
 	LRESULT r;
+
+    if(stateOpened != m_state)
+    {
+        res = false;
+        return res;
+    }
 
 	//Find the window handle and close the window
     if(NULL == 	m_win)	
@@ -342,6 +437,16 @@ int GNSx30Proxy::close()
 	}
 
 	m_win = NULL;
+
+    m_pServerSocketThread->terminate();
+    delete m_pServerSocketThread;
+    m_pServerSocketThread = NULL;
+
+    delete m_pClientSocket;
+    m_pClientSocket = NULL;
+    
+
+    m_state = stateInitialized;
 
 	return res;
 
@@ -381,5 +486,96 @@ int GNSx30Proxy::sendMsg(int up, int x, int y )
 	}
 
 	return res;
+}
+
+void GNSx30Proxy::processUdpData(void* pData, int dataSize)
+{
+    if(dataSize >0)
+    {
+        unsigned char msgType = ((unsigned char*)pData)[0];
+        switch(msgType)
+        {
+            case MGS_COM_ACTIVE:
+            {
+                FreqInfo* pFreqInfo = (FreqInfo*)pData;
+                m_comActive = pFreqInfo->freq;
+                logMessageEx("--- GNSx30Proxy::processUdpData m_comActive %d", m_comActive);
+                break;
+            }
+            case MGS_COM_STANDBY:
+            {
+                FreqInfo* pFreqInfo = (FreqInfo*)pData;
+                m_comStandby = pFreqInfo->freq;
+
+                logMessageEx("--- GNSx30Proxy::processUdpData m_comStandby %d", m_comStandby);
+
+                break;
+            }
+            case MGS_NAV_ACTIVE:
+                {
+                    FreqInfo* pFreqInfo = (FreqInfo*)pData;
+                    m_navActive = pFreqInfo->freq;
+                    logMessageEx("--- GNSx30Proxy::processUdpData m_navActive %d", m_comActive);
+                    break;
+                }
+            case MGS_NAV_STANDBY:
+                {
+                    FreqInfo* pFreqInfo = (FreqInfo*)pData;
+                    m_navStandby = pFreqInfo->freq;
+
+                    logMessageEx("--- GNSx30Proxy::processUdpData m_navStandby %d", m_comStandby);
+
+                    break;
+                }
+
+        }
+    }
+}
+
+
+//COM functions
+void  GNSx30Proxy::setCOMActiveFrequency(unsigned long freq)
+{
+    FreqInfo msg;
+
+    msg.msgType = MGS_COM_ACTIVE;
+    msg.freq = freq;
+
+    m_pClientSocket->send((char*)&msg, sizeof(msg));
+
+}
+
+void  GNSx30Proxy::setCOMStandbyFrequency(unsigned long freq)
+{
+    FreqInfo msg;
+
+    msg.msgType = MGS_COM_STANDBY;
+    msg.freq = freq;
+
+    m_pClientSocket->send((char*)&msg, sizeof(msg));
+
+}
+
+//NAV functions
+void  GNSx30Proxy::setNAVActiveFrequency(unsigned long freq)
+{
+    FreqInfo msg;
+
+    msg.msgType = MGS_NAV_ACTIVE;
+    msg.freq = freq;
+
+    m_pClientSocket->send((char*)&msg, sizeof(msg));
+
+}
+
+void  GNSx30Proxy::setNAVStandbyFrequency(unsigned long freq)
+{
+    FreqInfo msg;
+
+    msg.msgType = MGS_NAV_STANDBY;
+    msg.freq = freq;
+
+    m_pClientSocket->send((char*)&msg, sizeof(msg));
+
 }
 

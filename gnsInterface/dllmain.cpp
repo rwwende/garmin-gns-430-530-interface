@@ -24,7 +24,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             logInit(logFileName);
 
             //Hook to GNSx30.exe
-            hook_gnsx30(hModule);
+            Hooks::instanace()->hookGnsx30(hModule);
 
             break;
         }

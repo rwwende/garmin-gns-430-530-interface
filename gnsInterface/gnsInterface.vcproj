@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -134,6 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -176,19 +178,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\cdp_com_box_sim_hooks.cpp"
+			RelativePath=".\comhooks.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\cdp_com_box_sim_hooks.h"
-			>
-		</File>
-		<File
-			RelativePath=".\cdp_vloc_box_sim_hooks.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\cdp_vloc_box_sim_hooks.h"
+			RelativePath=".\comhooks.h"
 			>
 		</File>
 		<File
@@ -242,11 +236,19 @@
 			>
 		</File>
 		<File
-			RelativePath=".\IOP_SIM_hooks.cpp"
+			RelativePath=".\iopsimhooks.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\IOP_SIM_hooks.h"
+			RelativePath=".\iopsimhooks.h"
+			>
+		</File>
+		<File
+			RelativePath=".\navhooks.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\navhooks.h"
 			>
 		</File>
 		<File

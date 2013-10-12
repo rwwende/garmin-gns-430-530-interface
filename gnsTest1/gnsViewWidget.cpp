@@ -88,7 +88,8 @@ void GnsViewWidget::initializeGL()
     //Create the bezel texture
     glGenTextures(1, &m_bezelTextureID);
     glBindTexture(GL_TEXTURE_2D, m_bezelTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, 10, 10, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, 10, 10, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 10, 10, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 
     glGenTextures(1, &m_lcdTextureID);
@@ -156,33 +157,12 @@ void GnsViewWidget::paintGL()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pGNSIntf->bezel_width, pGNSIntf->bezel_height, 0, GL_BGR, GL_UNSIGNED_BYTE, pGNSIntf->Bezel_data);
+            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pGNSIntf->bezel_width, pGNSIntf->bezel_height, 0, GL_BGR, GL_UNSIGNED_BYTE, pGNSIntf->Bezel_data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pGNSIntf->bezel_width, pGNSIntf->bezel_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pGNSIntf->Bezel_data);
 
             pGNSIntf->BezelUpdated = false;
 
         }
-
-
-
-        glBindTexture(GL_TEXTURE_2D, m_bezelTextureID);
-        glEnable(GL_TEXTURE_2D);
-
-        glBegin(GL_QUADS);
-        glColor3f(1,1,1);
-
-        glTexCoord2f(0, 1); 
-        glVertex2f(0, 0);
-
-        glTexCoord2f(1 ,1); 
-        glVertex2f(1, 0);
-
-        glTexCoord2f(1, 0); 
-        glVertex2f(1, 1);
-
-        glTexCoord2f(0, 0); 
-        glVertex2f(0, 1);
-
-        glEnd();
 
 
 
@@ -192,6 +172,7 @@ void GnsViewWidget::paintGL()
 
             glBindTexture(GL_TEXTURE_2D, m_lcdTextureID);
             glEnable(GL_TEXTURE_2D);
+            glDisable(GL_BLEND);
 
             glBegin(GL_QUADS);
             glColor3f(1,1,1);
@@ -215,8 +196,35 @@ void GnsViewWidget::paintGL()
 
             glEnd();
         }
+
+
+        glBindTexture(GL_TEXTURE_2D, m_bezelTextureID);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
+
+
+        glBegin(GL_QUADS);
+        glColor3f(1,1,1);
+
+        glTexCoord2f(0, 1); 
+        glVertex2f(0, 0);
+
+        glTexCoord2f(1 ,1); 
+        glVertex2f(1, 0);
+
+        glTexCoord2f(1, 0); 
+        glVertex2f(1, 1);
+
+        glTexCoord2f(0, 0); 
+        glVertex2f(0, 1);
+
+        glEnd();
+
+
     
     }
+
 
 
 

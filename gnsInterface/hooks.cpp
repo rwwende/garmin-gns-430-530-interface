@@ -1,19 +1,58 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
+#include "hooks.h"
 #include "gnsTypes.h"
 #include "sharedstruct.h"
-#include "IOP_SIM_hooks.h"
+#include "iopsimhooks.h"
 #include "gdi32_hooks.h"
-#include "cdp_com_box_sim_hooks.h"
-#include "cdp_vloc_box_sim_hooks.h"
+#include "comhooks.h"
+#include "navhooks.h"
 #include "log.h"
 #include "resource.h"
+#include "udpsocketthread.h"
+#include "udpsocket.h"
 
-static SharedStruct<GNSIntf>* pShared;
+
+Hooks* Hooks::m_gInstance = NULL;
 
 
-bool hook_gnsx30(HMODULE hModule)
+void UdpDataCallback(void* pData, int dataSize, void* context)
+{
+    Hooks* pHooks = (Hooks*)context;
+    pHooks->processUdpData(pData, dataSize);
+
+}
+
+
+
+Hooks::Hooks()
+{
+
+
+}
+
+Hooks::~Hooks()
+{
+
+
+}
+
+Hooks* Hooks::instanace()
+{
+    if(NULL == m_gInstance)
+    {
+        m_gInstance = new Hooks();
+    }
+
+    return m_gInstance;
+
+
+}
+
+
+
+bool Hooks::hookGnsx30(HMODULE hModule)
 {
     HBITMAP hBmp;
     BITMAP	bezelBMP;
@@ -21,9 +60,19 @@ bool hook_gnsx30(HMODULE hModule)
 
     HMODULE h_sys_resources = GetModuleHandle("sys_resource.dll");
 
-    pShared = new SharedStruct<GNSIntf>(SHMEM_NAME, false, 0);
+    m_pShared = new SharedStruct<GNSIntf>(SHMEM_NAME, false, 0);
 
-    GNSIntf* pIntf =  pShared->get();
+    GNSIntf* pIntf =  m_pShared->get();
+
+    //Start the serverThread
+    m_pServerSocketThread = new UdpSocketThread(pIntf->garminTrainerPort);
+    m_pServerSocketThread->create();
+    m_pServerSocketThread->setCallback(UdpDataCallback, this);
+    m_pServerSocketThread->resume();
+    
+
+    m_pClientSocket  = new UdpSocket();
+    m_pClientSocket->openForSending("127.0.0.1", pIntf->proxyPort);
 
 
     pIntf->bezel_width = 0;
@@ -55,8 +104,8 @@ bool hook_gnsx30(HMODULE hModule)
             LR_CREATEDIBSECTION);
         ::GetObject (hBmp, sizeof (bezelBMP), &bezelBMP);
 
-        pIntf->bezel_lcd_top = 27;
         pIntf->bezel_lcd_left = 75;
+        pIntf->bezel_lcd_top = 25;
         pIntf->bezel_lcd_width = 320;
         pIntf->bezel_lcd_height = 234;
 
@@ -68,10 +117,22 @@ bool hook_gnsx30(HMODULE hModule)
     pIntf->bezel_width = bezelBMP.bmWidth;
     pIntf->bezel_height = bezelBMP.bmHeight;
 
-    unsigned char* pData = (unsigned char*)pIntf->Bezel_data;
-    unsigned char* pBmpData = (unsigned char*)bezelBMP.bmBits;
+    //unsigned long* pData = (unsigned long*)pIntf->Bezel_data;
+    //unsigned char* pBmpData = (unsigned char*)bezelBMP.bmBits;
 
-    memcpy(pIntf->Bezel_data, bezelBMP.bmBits, bezelBMP.bmWidthBytes*bezelBMP.bmHeight);
+    unsigned long* lData = (unsigned long*)bezelBMP.bmBits;
+    int i=0;
+    for(int y = 0; y < bezelBMP.bmHeight; y++)
+    {
+        for(int x = 0; x < bezelBMP.bmWidth; x++)
+        {
+            //logMessageEx("--- [%d][%d] = %08x", y, x, lData[y*bezelBMP.bmWidth + x]);;
+            //replace ARGB (ffff00ff) with transparent color
+            pIntf->Bezel_data[i] = 0xffff00ff == lData[i]?0x00000000:lData[i];
+            i++;
+        }
+    }
+    //memcpy(pIntf->Bezel_data, bezelBMP.bmBits, bezelBMP.bmWidthBytes*bezelBMP.bmHeight);
 
     pIntf->BezelUpdated = true;
     
@@ -79,13 +140,16 @@ bool hook_gnsx30(HMODULE hModule)
     logMessageEx("--- bezelBMP=%dx%d widthBytes=%d", bezelBMP.bmWidth, bezelBMP.bmHeight, bezelBMP.bmWidthBytes);
 
     //hook the IOP_SIM
-    hook_IOP_SIM(pIntf);
-	//hook the cdp_com_box_sim COM1
-	hook_cdp_com_box_sim(pIntf);
-	//hook the cdp_vloc_box_sim NAV1
-	hook_cdp_vloc_box_sim(pIntf);
+    IopSimHooks::instanace()->hook(m_pShared);
+    //hook the cdp_com_box_sim COM
+    ComHooks::instanace()->hook(m_pShared);
+    //hook the cdp_vloc_box_sim NAV
+    NavHooks::instanace()->hook(m_pShared);
+
+    //hook the cdp_vloc_box_sim NAV1
+	//hook_cdp_vloc_box_sim(pIntf);
 	//hook the GDI
-    hook_gdi(pShared);
+    hook_gdi(m_pShared);
 
 
 	//Fix the SIMULATING in the sys_resources
@@ -107,4 +171,62 @@ bool hook_gnsx30(HMODULE hModule)
 	return res;
 }
 
+
+bool Hooks::notifyFreqencyChange(FreqInfo* pInfo)
+{
+    bool res = true;
+    int r = m_pClientSocket->send((char*)pInfo, sizeof(FreqInfo));
+    if(r != sizeof(FreqInfo))
+    {
+        res = false;
+    }
+
+    logMessageEx("--- notifyFreqencyChange[%d] %d -> %d",pInfo->msgType,  pInfo->freq,  res);
+
+    return res;
+}
+
+
+void Hooks::processUdpData(void* pData, int dataSize)
+{
+    if(dataSize >0)
+    {
+        unsigned char msgType = ((unsigned char*)pData)[0];
+        switch(msgType)
+        {
+        case MGS_COM_ACTIVE:
+            {
+                FreqInfo* pFreqInfo = (FreqInfo*)pData;
+                ComHooks::instanace()->setActiveFrequency(pFreqInfo->freq);
+                logMessageEx("--- Hooks::processUdpData MGS_COM_ACTIVE pFreqInfo->freq %d", pFreqInfo->freq);
+                break;
+            }
+        case MGS_COM_STANDBY:
+            {
+                FreqInfo* pFreqInfo = (FreqInfo*)pData;
+                ComHooks::instanace()->setStandbyFrequency(pFreqInfo->freq);
+                logMessageEx("--- Hooks::processUdpData MGS_COM_STANDBY pFreqInfo->freq %d", pFreqInfo->freq);
+
+                break;
+            }
+        case MGS_NAV_ACTIVE:
+            {
+                FreqInfo* pFreqInfo = (FreqInfo*)pData;
+                NavHooks::instanace()->setActiveFrequency(pFreqInfo->freq);
+                logMessageEx("--- Hooks::processUdpData MGS_NAV_ACTIVE pFreqInfo->freq %d", pFreqInfo->freq);
+                break;
+            }
+        case MGS_NAV_STANDBY:
+            {
+                FreqInfo* pFreqInfo = (FreqInfo*)pData;
+                NavHooks::instanace()->setStandbyFrequency(pFreqInfo->freq);
+                logMessageEx("--- Hooks::processUdpData MGS_NAV_STANDBY pFreqInfo->freq %d", pFreqInfo->freq);
+
+                break;
+            }
+
+
+        }
+    }
+}
 

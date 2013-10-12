@@ -8,16 +8,17 @@ MainWindow::MainWindow(QWidget* pParent, Qt::WFlags flags)
     
     ui.setupUi(this);
 
-    m_GNSx30Proxy.initialize();
+    //m_GNSx30Proxy.initialize(false);
+    m_GNSx30Proxy.initialize(true);
 
-    GNSIntf* pIntf = m_GNSx30Proxy.getInterface();
+    //GNSIntf* pIntf = m_GNSx30Proxy.getInterface();
 
-    //initialize the initial frequencies
-    pIntf->com1_active = 12345;
-    pIntf->com1_standby = 12345;
-    pIntf->nav1_active = 12345;
-    pIntf->nav1_standby = 12345;
+    updateGUI();
 
+    connect(&m_updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimer()));
+    m_updateTimer.setInterval(500);
+    //m_updateTimer.setSingleShot(true);
+    m_updateTimer.start();
 
 
     
@@ -26,6 +27,24 @@ MainWindow::MainWindow(QWidget* pParent, Qt::WFlags flags)
 MainWindow::~MainWindow()
 {
     m_GNSx30Proxy.terminate();
+}
+
+void MainWindow::updateGUI()
+{
+    unsigned long ulval;
+
+    ulval = m_GNSx30Proxy.getCOMActiveFrequency();
+    ui.spinCOMActive->setValue((float)ulval/1000.0f);
+
+    ulval = m_GNSx30Proxy.getCOMStandbyFrequency();
+    ui.spinCOMStandby->setValue((float)ulval/1000.0f);
+
+    ulval = m_GNSx30Proxy.getNAVActiveFrequency();
+    ui.spinNAVActive->setValue((float)ulval/1000.0f);
+
+    ulval = m_GNSx30Proxy.getNAVStandbyFrequency();
+    ui.spinNAVStandby->setValue((float)ulval/1000.0f);
+
 }
 
 void MainWindow::resizeEvent ( QResizeEvent * event )
@@ -38,6 +57,12 @@ void MainWindow::resizeEvent ( QResizeEvent * event )
 
 
 }
+
+void MainWindow::onUpdateTimer()
+{
+    updateGUI();
+}
+
 
 
 void MainWindow::onRepositionViewWidget()
@@ -106,3 +131,56 @@ void MainWindow::on_btnStop_clicked ( bool checked  )
     QTimer::singleShot(10, this, SLOT(onRepositionViewWidget()));
 
 }
+
+//COM
+void MainWindow::on_btnCOMActiveSet_clicked ( bool checked )
+{
+    Q_UNUSED(checked);
+    bool ok;
+    unsigned long val = QInputDialog::getInt( this, "COM Active Frequency", "Frequency", 100000, 100000, 200000, 1, &ok);
+    if(ok)
+    {
+        m_GNSx30Proxy.setCOMActiveFrequency(val);
+    }
+}
+
+void MainWindow::on_btnCOMStandbySet_clicked ( bool checked )
+{
+    Q_UNUSED(checked);
+
+    bool ok;
+    unsigned long val = QInputDialog::getInt( this, "COM Standby Frequency", "Frequency", 100000, 100000, 200000, 1, &ok);
+    if(ok)
+    {
+        m_GNSx30Proxy.setCOMStandbyFrequency(val);
+    }
+    
+
+}
+
+//NAV
+void MainWindow::on_btnNAVActiveSet_clicked ( bool checked )
+{
+    Q_UNUSED(checked);
+    bool ok;
+    unsigned long val = QInputDialog::getInt( this, "NAV Active Frequency", "Frequency", 100000, 100000, 200000, 1, &ok);
+    if(ok)
+    {
+        m_GNSx30Proxy.setNAVActiveFrequency(val);
+    }
+}
+
+void MainWindow::on_btnNAVStandbySet_clicked ( bool checked )
+{
+    Q_UNUSED(checked);
+
+    bool ok;
+    unsigned long val = QInputDialog::getInt( this, "NAV Standby Frequency", "Frequency", 100000, 100000, 200000, 1, &ok);
+    if(ok)
+    {
+        m_GNSx30Proxy.setNAVStandbyFrequency(val);
+    }
+
+
+}
+

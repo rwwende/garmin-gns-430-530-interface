@@ -292,7 +292,7 @@ DWORD GetModule(IN DWORD dwProcessId, IN char* szModuleNameOrPath, IN BOOL bFull
 }
 
 
-int startAndInject(char* pExeName, char* pExePath, char* pLibFile)
+int startAndInject(char* pExeName, char* pExePath, char* pLibFile, bool hideGUI)
 {
     BOOL bFullPath = FALSE;
 
@@ -305,8 +305,11 @@ int startAndInject(char* pExeName, char* pExePath, char* pLibFile)
     memset(&siStartupInfo, 0, sizeof(siStartupInfo));
     memset(&piProcessInfo, 0, sizeof(piProcessInfo));
     siStartupInfo.cb = sizeof(siStartupInfo); 
-    siStartupInfo.dwFlags = STARTF_USESHOWWINDOW;
-    siStartupInfo.wShowWindow = SW_HIDE;
+    if(hideGUI)
+    {
+        siStartupInfo.dwFlags = STARTF_USESHOWWINDOW;
+        siStartupInfo.wShowWindow = SW_HIDE;
+    }
     
     
     CreateProcess(NULL, pExeName,

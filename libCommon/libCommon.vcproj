@@ -41,6 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="."
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;$(NOINHERIT)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -104,6 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="."
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;$(NOINHERIT)"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -181,6 +183,30 @@
 		</File>
 		<File
 			RelativePath=".\sharedstruct.h"
+			>
+		</File>
+		<File
+			RelativePath=".\thread.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\thread.h"
+			>
+		</File>
+		<File
+			RelativePath=".\udpsocket.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\udpsocket.h"
+			>
+		</File>
+		<File
+			RelativePath=".\udpsocketthread.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\udpsocketthread.h"
 			>
 		</File>
 	</Files>

@@ -4,6 +4,24 @@
 #include <windows.h>
 #include "config.h"
 
+enum MSG_TYPE 
+{
+    MGS_COM_ACTIVE = 0,
+    MGS_COM_STANDBY,
+    MGS_NAV_ACTIVE,
+    MGS_NAV_STANDBY,
+};
+
+
+typedef struct _FreqInfo
+{
+    unsigned char msgType;
+    unsigned long freq;
+}FreqInfo;
+
+
+
+
 typedef struct _GNSInfo
 {
 	int type;
@@ -130,16 +148,19 @@ typedef struct _GNSIntf
     unsigned long bezel_width;
     unsigned long bezel_height;
 
-    unsigned long bezel_lcd_top;
     unsigned long bezel_lcd_left;
+    unsigned long bezel_lcd_top;
     unsigned long bezel_lcd_width;
     unsigned long bezel_lcd_height;
 
     unsigned long Bezel_data[OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT]; // this should eb the exact size as the BITMAP_WIDTH in the info
     bool          BezelUpdated;
 
-    unsigned long gnsType;
     
+    unsigned long gnsType;
+    unsigned short garminTrainerPort;
+    unsigned short proxyPort;
+
 
     bool                simulatorConnected;
 	send_msg_ex_0x12	msg_ex_0x12;
@@ -147,25 +168,6 @@ typedef struct _GNSIntf
 	//this will be set the first time inside IOP_SIM_hooks 
 	// xplane will use this as an offset to set the altitude
 	float first_altitude2;  
-
-	//COM/NAV
-	// Will be set by my_SYS_pvg_var_ctrl in cdp_com_box_sim_hooks whenever COM (active/standby) changes
-	bool com1_changed;
-	//active and standby are set by xplane the fist time before gns is opened
-	//The first call of the my_SYS_pvg_var_ctrl in cdp_com_box_sim_hooks will take over those values and 
-	// write them in the registers 0x7f2 and 0x7f6
-	unsigned long com1_standby;
-	unsigned long com1_active;
-
-	//Will be set by my_SYS_pvg_var_ctrl in cdp_vloc_box_sim_hooks  whenever NAV (active/standby) changes
-	bool nav1_changed;
-	
-	//active and standby are set by xplane the fist time before gns is opened
-	//The first call of the my_SYS_pvg_var_ctrl in cdp_vloc_box_sim_hooks will take over those values and 
-	// write them in the registers 0x7f2 and 0x7f6
-	unsigned long nav1_standby;
-	unsigned long nav1_active;
-
 
 	
 	//Auto pilot 

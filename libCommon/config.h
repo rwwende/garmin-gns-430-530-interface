@@ -16,7 +16,7 @@
 #define GARMIN_INTERNATIONAL "Software\\GARMIN International\\gnsx30"
 #define GARMIN_INTERNATIONAL_SETTINGS "Software\\GARMIN International\\gnsx30\\Trainer Settings"
 #define GARMIN_INTERNATIONAL_WINDOW "Software\\GARMIN International\\gnsx30\\WindowPosition"
-#define GNS_430AWT "GNS 430AWT"
+#define GNS_430AWT "GNS 430AW"
 #define GNS_530AWT "GNS 530AWT"
 
 #define GNSX30EXE_CRC 0x192813d1

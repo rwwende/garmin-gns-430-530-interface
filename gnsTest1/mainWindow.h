@@ -28,9 +28,12 @@ private slots:
     //COM
     void    on_btnCOMActiveSet_clicked ( bool checked = false );
     void    on_btnCOMStandbySet_clicked ( bool checked = false );
-    //COM
+    //NAV
     void    on_btnNAVActiveSet_clicked ( bool checked = false );
     void    on_btnNAVStandbySet_clicked ( bool checked = false );
+    //GPS
+    void    on_btnSetGPS_clicked ( bool checked = false );
+    void    on_btnSimulateGPS_clicked ( bool checked = false );
 
 private:
     GNSx30Proxy m_GNSx30Proxy;

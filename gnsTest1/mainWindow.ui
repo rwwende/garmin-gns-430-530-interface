@@ -47,7 +47,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QTabWidget" name="tabWidget">
+    <widget class="QTabWidget" name="tabControl">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -61,7 +61,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabCOM">
       <attribute name="title">
@@ -262,6 +262,107 @@
           </widget>
          </item>
         </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabGPS">
+      <attribute name="title">
+       <string>GPS</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="spinLongitude">
+         <property name="maximum">
+          <double>360.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QDoubleSpinBox" name="spinLatitude">
+         <property name="maximum">
+          <double>360.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Latitude (deg)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Speed (m/s)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>VerticalSpeed (m/s)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QDoubleSpinBox" name="spinVerticalSpeed">
+         <property name="maximum">
+          <double>10000.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Longitude (deg)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Heading (deg)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QDoubleSpinBox" name="spinHeading"/>
+       </item>
+       <item row="1" column="5">
+        <widget class="QDoubleSpinBox" name="spinAltitude">
+         <property name="maximum">
+          <double>10000.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Altitude (m)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QPushButton" name="btnSetGPS">
+         <property name="text">
+          <string>Set</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QPushButton" name="btnSimulateGPS">
+         <property name="text">
+          <string>Simulate</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QDoubleSpinBox" name="spinSpeed">
+         <property name="maximum">
+          <double>1000.000000000000000</double>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

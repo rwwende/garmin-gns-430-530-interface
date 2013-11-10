@@ -43,6 +43,8 @@ struct SDLLHook
 
     // Function hook array.  Terminated with a NULL Name field.
     SFunctionHook Functions[];
+
+    
 };
 
 
@@ -51,6 +53,7 @@ bool EnumImportModules( ModuleCallback_t cb , HMODULE mod);
 
 bool HookAPICallsMod( SDLLHook* Hook, HMODULE mod );
 
+void __cdecl DefaultHook( PVOID dummy );
 
 
 #endif

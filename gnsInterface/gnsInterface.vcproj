@@ -244,6 +244,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\krnlsimhooks.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\krnlsimhooks.h"
+			>
+		</File>
+		<File
 			RelativePath=".\navhooks.cpp"
 			>
 		</File>
@@ -257,6 +265,14 @@
 		</File>
 		<File
 			RelativePath=".\resources.rc"
+			>
+		</File>
+		<File
+			RelativePath=".\testhooks.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\testhooks.h"
 			>
 		</File>
 	</Files>

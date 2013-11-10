@@ -11,6 +11,9 @@
 #include "config.h"
 
 
+#define TRAINER_PORT  5000
+#define PROXY_PORT    (TRAINER_PORT+1)
+
 void UdpDataCallback(void* pData, int dataSize, void* context)
 {
     GNSx30Proxy* pGNSx30Proxy = (GNSx30Proxy*)context;
@@ -314,12 +317,10 @@ bool GNSx30Proxy::open(int gnsType)
     m_navActive = 108700;
     m_navStandby = 111450;
 
-
     m_pvData->gnsType = gnsType;
 
-#pragma warning FIXME
-    m_pvData->garminTrainerPort = 5000;
-    m_pvData->proxyPort = 5001;
+    m_pvData->garminTrainerPort = TRAINER_PORT;
+    m_pvData->proxyPort = PROXY_PORT;
 
 
     //Start the serverThread
@@ -375,7 +376,6 @@ bool GNSx30Proxy::open(int gnsType)
 	memset(m_pvData->LDC_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
 
     startAndInject(m_trainter_exe, m_trainter_path, m_interface_lib, m_hideGUI);
-    
 
 
 
@@ -495,14 +495,14 @@ void GNSx30Proxy::processUdpData(void* pData, int dataSize)
         unsigned char msgType = ((unsigned char*)pData)[0];
         switch(msgType)
         {
-            case MGS_COM_ACTIVE:
+            case MSG_COM_ACTIVE:
             {
                 FreqInfo* pFreqInfo = (FreqInfo*)pData;
                 m_comActive = pFreqInfo->freq;
                 logMessageEx("--- GNSx30Proxy::processUdpData m_comActive %d", m_comActive);
                 break;
             }
-            case MGS_COM_STANDBY:
+            case MSG_COM_STANDBY:
             {
                 FreqInfo* pFreqInfo = (FreqInfo*)pData;
                 m_comStandby = pFreqInfo->freq;
@@ -511,14 +511,14 @@ void GNSx30Proxy::processUdpData(void* pData, int dataSize)
 
                 break;
             }
-            case MGS_NAV_ACTIVE:
+            case MSG_NAV_ACTIVE:
                 {
                     FreqInfo* pFreqInfo = (FreqInfo*)pData;
                     m_navActive = pFreqInfo->freq;
                     logMessageEx("--- GNSx30Proxy::processUdpData m_navActive %d", m_comActive);
                     break;
                 }
-            case MGS_NAV_STANDBY:
+            case MSG_NAV_STANDBY:
                 {
                     FreqInfo* pFreqInfo = (FreqInfo*)pData;
                     m_navStandby = pFreqInfo->freq;
@@ -538,7 +538,7 @@ void  GNSx30Proxy::setCOMActiveFrequency(unsigned long freq)
 {
     FreqInfo msg;
 
-    msg.msgType = MGS_COM_ACTIVE;
+    msg.msgType = MSG_COM_ACTIVE;
     msg.freq = freq;
 
     m_pClientSocket->send((char*)&msg, sizeof(msg));
@@ -549,7 +549,7 @@ void  GNSx30Proxy::setCOMStandbyFrequency(unsigned long freq)
 {
     FreqInfo msg;
 
-    msg.msgType = MGS_COM_STANDBY;
+    msg.msgType = MSG_COM_STANDBY;
     msg.freq = freq;
 
     m_pClientSocket->send((char*)&msg, sizeof(msg));
@@ -561,7 +561,7 @@ void  GNSx30Proxy::setNAVActiveFrequency(unsigned long freq)
 {
     FreqInfo msg;
 
-    msg.msgType = MGS_NAV_ACTIVE;
+    msg.msgType = MSG_NAV_ACTIVE;
     msg.freq = freq;
 
     m_pClientSocket->send((char*)&msg, sizeof(msg));
@@ -572,10 +572,28 @@ void  GNSx30Proxy::setNAVStandbyFrequency(unsigned long freq)
 {
     FreqInfo msg;
 
-    msg.msgType = MGS_NAV_STANDBY;
+    msg.msgType = MSG_NAV_STANDBY;
     msg.freq = freq;
 
     m_pClientSocket->send((char*)&msg, sizeof(msg));
 
 }
 
+
+void  GNSx30Proxy::setGPSInfo(double	latitude, double longitude, float speed, float	heading, float verticalSpeed, float altitude)
+{
+    GPSInfo msg;
+
+    msg.msgType = MSG_GPS_INFO;
+    msg.latitude = latitude;
+    msg.longitude = longitude;
+    msg.speed = speed;
+    msg.heading = heading;
+    msg.verticalSpeed = verticalSpeed;
+    msg.altitude = altitude;
+
+    m_pClientSocket->send((char*)&msg, sizeof(msg));
+
+
+
+}

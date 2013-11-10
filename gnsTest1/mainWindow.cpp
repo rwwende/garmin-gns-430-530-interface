@@ -1,15 +1,16 @@
 #include <windows.h>
 #include "mainWindow.h"
 
+#define DEG2RAD (0.0174532925f)
 
 MainWindow::MainWindow(QWidget* pParent, Qt::WFlags flags)
     : QWidget(pParent, flags)
 {
     
     ui.setupUi(this);
-
-    //m_GNSx30Proxy.initialize(false);
-    m_GNSx30Proxy.initialize(true);
+    
+    bool hideGNSWindow = false; //Sety this to true to hide the GNS window
+    m_GNSx30Proxy.initialize(hideGNSWindow);
 
     //GNSIntf* pIntf = m_GNSx30Proxy.getInterface();
 
@@ -184,3 +185,26 @@ void MainWindow::on_btnNAVStandbySet_clicked ( bool checked )
 
 }
 
+//GPS
+void MainWindow::on_btnSetGPS_clicked ( bool checked )
+{
+    Q_UNUSED(checked);
+
+    float heading = ui.spinHeading->value();
+    if( heading > 180) heading = heading - 360;
+
+    m_GNSx30Proxy.setGPSInfo(   ui.spinLatitude->value()*DEG2RAD,
+                                ui.spinLongitude->value()*DEG2RAD,
+                                ui.spinSpeed->value(),
+                                heading*DEG2RAD,
+                                ui.spinVerticalSpeed->value(),
+                                ui.spinAltitude->value()
+                            );
+
+}
+
+void MainWindow::on_btnSimulateGPS_clicked ( bool checked )
+{
+    Q_UNUSED(checked);
+
+}

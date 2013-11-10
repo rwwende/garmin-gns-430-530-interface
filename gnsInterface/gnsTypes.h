@@ -6,10 +6,11 @@
 
 enum MSG_TYPE 
 {
-    MGS_COM_ACTIVE = 0,
-    MGS_COM_STANDBY,
-    MGS_NAV_ACTIVE,
-    MGS_NAV_STANDBY,
+    MSG_COM_ACTIVE = 0,
+    MSG_COM_STANDBY,
+    MSG_NAV_ACTIVE,
+    MSG_NAV_STANDBY,
+    MSG_GPS_INFO
 };
 
 
@@ -19,25 +20,18 @@ typedef struct _FreqInfo
     unsigned long freq;
 }FreqInfo;
 
-
-
-
-typedef struct _GNSInfo
+typedef struct _GPSInfo
 {
-	int type;
-
-	//offscreen bitmap 
-	int BITMAP_WIDTH; 
-	int BITMAP_HEIGHT;
-	int BEZEL_WIDTH;
-	int BEZEL_HEIGHT;
-	int LCD_WIDTH;
-	int LCD_HEIGHT;
-	int LCD_POS_X;
-	int LCD_POS_Y;
+    unsigned char msgType;
+    double		  latitude; //radians
+    double		  longitude; //radians
+    float		  speed; //m/s
+    float		  heading; //0=> pi, -pi=>0
+    float		  verticalSpeed; //0=>
+    float		  altitude; // m
+}GPSInfo;
 
 
-}GNSInfo;
 
 
 
@@ -112,28 +106,6 @@ typedef struct _SharedObjShr
 }SharedObjShr;
 
 
-typedef struct _send_msg_ex_0x12
-{
-	unsigned char unknown1[4];
-	unsigned short hfom;
-	unsigned char unknown2[2];
-	unsigned short vfom;
-	unsigned char unknown3[6];
-	float		  altitude; // m
-	float			speed; //m/s
-	float			heading; //0=> pi, -pi=>0
-	float			vertical_speed; //0=>
-	float		  altitude2; // m
-	double		  latitude; //radians
-	double		  longitude; //radians
-	unsigned char	month;
-	unsigned char	day;
-	unsigned short	year;
-	unsigned short	hour;
-	unsigned char	minute;
-	unsigned char	sec;
-}send_msg_ex_0x12;
-
 #pragma pack(pop)
 
 
@@ -162,12 +134,6 @@ typedef struct _GNSIntf
     unsigned short proxyPort;
 
 
-    bool                simulatorConnected;
-	send_msg_ex_0x12	msg_ex_0x12;
-
-	//this will be set the first time inside IOP_SIM_hooks 
-	// xplane will use this as an offset to set the altitude
-	float first_altitude2;  
 
 	
 	//Auto pilot 

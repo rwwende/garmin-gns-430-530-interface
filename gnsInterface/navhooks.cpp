@@ -9,7 +9,6 @@
 
 #define NAV_ACTIVE_REGISTER (0x7f2)
 #define NAV_STANDBY_REGISTER (0x7f6)
-//#define NAV_UNKNOWN_REGISTER (0x7e8) //size 1
 
 
 static unsigned long __cdecl my_TSK_pvg_send_msg_ex(unsigned long p1, unsigned long p2)
@@ -254,7 +253,7 @@ void NavHooks::checkFrequencies()
 
             m_activeNavVal = val;
             FreqInfo msg;
-            msg.msgType = MGS_NAV_ACTIVE;
+            msg.msgType = MSG_NAV_ACTIVE;
             msg.freq = val;
 
             Hooks::instanace()->notifyFreqencyChange(&msg);
@@ -270,7 +269,7 @@ void NavHooks::checkFrequencies()
 
             m_standbyNavVal = val;
             FreqInfo msg;
-            msg.msgType = MGS_NAV_STANDBY;
+            msg.msgType = MSG_NAV_STANDBY;
             msg.freq = val;
 
             Hooks::instanace()->notifyFreqencyChange(&msg);

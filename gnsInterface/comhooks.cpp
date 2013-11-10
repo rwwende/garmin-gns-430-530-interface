@@ -254,7 +254,7 @@ void ComHooks::checkFrequencies()
 
             m_activeComVal = val;
             FreqInfo msg;
-            msg.msgType = MGS_COM_ACTIVE;
+            msg.msgType = MSG_COM_ACTIVE;
             msg.freq = val;
 
             Hooks::instanace()->notifyFreqencyChange(&msg);
@@ -270,7 +270,7 @@ void ComHooks::checkFrequencies()
 
             m_standbyComVal = val;
             FreqInfo msg;
-            msg.msgType = MGS_COM_STANDBY;
+            msg.msgType = MSG_COM_STANDBY;
             msg.freq = val;
 
             Hooks::instanace()->notifyFreqencyChange(&msg);

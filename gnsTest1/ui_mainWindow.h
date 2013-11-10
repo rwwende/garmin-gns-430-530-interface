@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainWindow.ui'
 **
-** Created: Sat Oct 12 21:47:27 2013
+** Created: Sun Nov 10 07:59:29 2013
 **      by: Qt User Interface Compiler version 4.6.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -17,6 +17,7 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QFrame>
+#include <QtGui/QGridLayout>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
@@ -35,7 +36,7 @@ public:
     QVBoxLayout *verticalLayout;
     QFrame *view_box;
     GnsViewWidget *gnsViewWidget;
-    QTabWidget *tabWidget;
+    QTabWidget *tabControl;
     QWidget *tabCOM;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout_2;
@@ -60,6 +61,22 @@ public:
     QSpacerItem *horizontalSpacer_5;
     QDoubleSpinBox *spinNAVStandby;
     QPushButton *btnNAVStandbySet;
+    QWidget *tabGPS;
+    QGridLayout *gridLayout;
+    QDoubleSpinBox *spinLongitude;
+    QDoubleSpinBox *spinLatitude;
+    QLabel *label_5;
+    QLabel *label_6;
+    QLabel *label_7;
+    QDoubleSpinBox *spinVerticalSpeed;
+    QLabel *label_8;
+    QLabel *label_9;
+    QDoubleSpinBox *spinHeading;
+    QDoubleSpinBox *spinAltitude;
+    QLabel *label_10;
+    QPushButton *btnSetGPS;
+    QPushButton *btnSimulateGPS;
+    QDoubleSpinBox *spinSpeed;
     QHBoxLayout *horizontalLayout;
     QComboBox *cmbModel;
     QPushButton *btnStart;
@@ -93,10 +110,10 @@ public:
 
         verticalLayout->addWidget(view_box);
 
-        tabWidget = new QTabWidget(MainWindow);
-        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
-        tabWidget->setMinimumSize(QSize(0, 100));
-        tabWidget->setMaximumSize(QSize(16777215, 100));
+        tabControl = new QTabWidget(MainWindow);
+        tabControl->setObjectName(QString::fromUtf8("tabControl"));
+        tabControl->setMinimumSize(QSize(0, 100));
+        tabControl->setMaximumSize(QSize(16777215, 100));
         tabCOM = new QWidget();
         tabCOM->setObjectName(QString::fromUtf8("tabCOM"));
         verticalLayout_2 = new QVBoxLayout(tabCOM);
@@ -157,7 +174,7 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout_3);
 
-        tabWidget->addTab(tabCOM, QString());
+        tabControl->addTab(tabCOM, QString());
         tabNAV = new QWidget();
         tabNAV->setObjectName(QString::fromUtf8("tabNAV"));
         verticalLayout_3 = new QVBoxLayout(tabNAV);
@@ -218,9 +235,89 @@ public:
 
         verticalLayout_3->addLayout(horizontalLayout_5);
 
-        tabWidget->addTab(tabNAV, QString());
+        tabControl->addTab(tabNAV, QString());
+        tabGPS = new QWidget();
+        tabGPS->setObjectName(QString::fromUtf8("tabGPS"));
+        gridLayout = new QGridLayout(tabGPS);
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+        spinLongitude = new QDoubleSpinBox(tabGPS);
+        spinLongitude->setObjectName(QString::fromUtf8("spinLongitude"));
+        spinLongitude->setMaximum(360);
 
-        verticalLayout->addWidget(tabWidget);
+        gridLayout->addWidget(spinLongitude, 1, 1, 1, 1);
+
+        spinLatitude = new QDoubleSpinBox(tabGPS);
+        spinLatitude->setObjectName(QString::fromUtf8("spinLatitude"));
+        spinLatitude->setMaximum(360);
+
+        gridLayout->addWidget(spinLatitude, 0, 1, 1, 1);
+
+        label_5 = new QLabel(tabGPS);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
+
+        gridLayout->addWidget(label_5, 0, 0, 1, 1);
+
+        label_6 = new QLabel(tabGPS);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+
+        gridLayout->addWidget(label_6, 0, 2, 1, 1);
+
+        label_7 = new QLabel(tabGPS);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+
+        gridLayout->addWidget(label_7, 0, 4, 1, 1);
+
+        spinVerticalSpeed = new QDoubleSpinBox(tabGPS);
+        spinVerticalSpeed->setObjectName(QString::fromUtf8("spinVerticalSpeed"));
+        spinVerticalSpeed->setMaximum(10000);
+
+        gridLayout->addWidget(spinVerticalSpeed, 0, 5, 1, 1);
+
+        label_8 = new QLabel(tabGPS);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
+
+        gridLayout->addWidget(label_8, 1, 0, 1, 1);
+
+        label_9 = new QLabel(tabGPS);
+        label_9->setObjectName(QString::fromUtf8("label_9"));
+
+        gridLayout->addWidget(label_9, 1, 2, 1, 1);
+
+        spinHeading = new QDoubleSpinBox(tabGPS);
+        spinHeading->setObjectName(QString::fromUtf8("spinHeading"));
+
+        gridLayout->addWidget(spinHeading, 1, 3, 1, 1);
+
+        spinAltitude = new QDoubleSpinBox(tabGPS);
+        spinAltitude->setObjectName(QString::fromUtf8("spinAltitude"));
+        spinAltitude->setMaximum(10000);
+
+        gridLayout->addWidget(spinAltitude, 1, 5, 1, 1);
+
+        label_10 = new QLabel(tabGPS);
+        label_10->setObjectName(QString::fromUtf8("label_10"));
+
+        gridLayout->addWidget(label_10, 1, 4, 1, 1);
+
+        btnSetGPS = new QPushButton(tabGPS);
+        btnSetGPS->setObjectName(QString::fromUtf8("btnSetGPS"));
+
+        gridLayout->addWidget(btnSetGPS, 0, 6, 1, 1);
+
+        btnSimulateGPS = new QPushButton(tabGPS);
+        btnSimulateGPS->setObjectName(QString::fromUtf8("btnSimulateGPS"));
+
+        gridLayout->addWidget(btnSimulateGPS, 1, 6, 1, 1);
+
+        spinSpeed = new QDoubleSpinBox(tabGPS);
+        spinSpeed->setObjectName(QString::fromUtf8("spinSpeed"));
+        spinSpeed->setMaximum(1000);
+
+        gridLayout->addWidget(spinSpeed, 0, 3, 1, 1);
+
+        tabControl->addTab(tabGPS, QString());
+
+        verticalLayout->addWidget(tabControl);
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
@@ -249,7 +346,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabControl->setCurrentIndex(2);
         cmbModel->setCurrentIndex(1);
 
 
@@ -263,12 +360,21 @@ public:
         btnCOMActiveSet->setText(QApplication::translate("MainWindow", "Set", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("MainWindow", "Standby", 0, QApplication::UnicodeUTF8));
         btnCOMStandbySet->setText(QApplication::translate("MainWindow", "Set", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tabCOM), QApplication::translate("MainWindow", "COM", 0, QApplication::UnicodeUTF8));
+        tabControl->setTabText(tabControl->indexOf(tabCOM), QApplication::translate("MainWindow", "COM", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("MainWindow", "Active", 0, QApplication::UnicodeUTF8));
         btnNAVActiveSet->setText(QApplication::translate("MainWindow", "Set", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("MainWindow", "Standby", 0, QApplication::UnicodeUTF8));
         btnNAVStandbySet->setText(QApplication::translate("MainWindow", "Set", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tabNAV), QApplication::translate("MainWindow", "NAV", 0, QApplication::UnicodeUTF8));
+        tabControl->setTabText(tabControl->indexOf(tabNAV), QApplication::translate("MainWindow", "NAV", 0, QApplication::UnicodeUTF8));
+        label_5->setText(QApplication::translate("MainWindow", "Latitude (deg)", 0, QApplication::UnicodeUTF8));
+        label_6->setText(QApplication::translate("MainWindow", "Speed (m/s)", 0, QApplication::UnicodeUTF8));
+        label_7->setText(QApplication::translate("MainWindow", "VerticalSpeed (m/s)", 0, QApplication::UnicodeUTF8));
+        label_8->setText(QApplication::translate("MainWindow", "Longitude (deg)", 0, QApplication::UnicodeUTF8));
+        label_9->setText(QApplication::translate("MainWindow", "Heading (deg)", 0, QApplication::UnicodeUTF8));
+        label_10->setText(QApplication::translate("MainWindow", "Altitude (m)", 0, QApplication::UnicodeUTF8));
+        btnSetGPS->setText(QApplication::translate("MainWindow", "Set", 0, QApplication::UnicodeUTF8));
+        btnSimulateGPS->setText(QApplication::translate("MainWindow", "Simulate", 0, QApplication::UnicodeUTF8));
+        tabControl->setTabText(tabControl->indexOf(tabGPS), QApplication::translate("MainWindow", "GPS", 0, QApplication::UnicodeUTF8));
         cmbModel->clear();
         cmbModel->insertItems(0, QStringList()
          << QApplication::translate("MainWindow", "GNS 430 WAAS", 0, QApplication::UnicodeUTF8)

@@ -21,6 +21,17 @@ public:
 
     bool hook(SharedStruct<GNSIntf>*  pShared);
 
+
+    //GPS functions
+    //latitude; //radians
+    //longitude; //radians
+    //speed; //m/s
+    //heading; //0=> pi, -pi=>0
+    //verticalSpeed; //0=>
+    //altitude; // m
+    void  setGPSInfo(double	latitude, double longitude, float speed, float	heading, float verticalSpeed, float altitude);
+
+
     unsigned long   TSK_pvg_send_msg_ex(unsigned long p1, unsigned long p2);
     unsigned long   reg_read(unsigned long num, unsigned long *addr, unsigned long size, unsigned long p4);
     unsigned long   reg_write(unsigned long num, unsigned long *addr, unsigned long size, unsigned long p4);
@@ -37,6 +48,18 @@ private:
 
     SharedStruct<GNSIntf>*  m_pShared;
     GNSIntf*                m_pData;
+
+
+    double		            m_latitude; //radians
+    double		            m_longitude; //radians
+    float		            m_speed; //m/s
+    float		            m_heading; //0=> pi, -pi=>0
+    float		            m_verticalSpeed; //0=>
+    float		            m_altitude; // m
+    //this will be set the first time inside IOP_SIM_hooks 
+    // this is used as an offset to set the altitude
+    float		            m_altitude2; // m
+    
 
     TSK_pvg_send_msg_ex_t	m_TSK_pvg_send_msg_ex_fn;
     reg_read_t		        m_reg_read_fn;

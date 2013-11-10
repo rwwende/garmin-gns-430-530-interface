@@ -6,7 +6,48 @@
 
 //===========================================================================
 // Called from the DLPD_IAT_STUB stubs.  Increments "count" field of the stub
+void __cdecl DefaultHook( PVOID dummy )
+{
+    __asm   pushad  // Save all general purpose registers
 
+        // Get return address, then subtract 5 (size of a CALL X instruction)
+        // The result points at a DLPD_IAT_STUB
+
+        // pointer math!  &dummy-1 really subtracts sizeof(PVOID)
+        PDWORD pRetAddr = (PDWORD)(&dummy - 1);
+
+    DLPD_IAT_STUB * pDLPDStub = (DLPD_IAT_STUB *)(*pRetAddr - 5);
+
+    pDLPDStub->count++;
+
+    // Remove the above conditional to get a cheezy API trace from
+    // the loader process.  It's slow!
+    if ( !IMAGE_SNAP_BY_ORDINAL( pDLPDStub->pszNameOrOrdinal) )
+    {
+        if(
+            //0 ==strcmp("SIM_lock_display", (PSTR)pDLPDStub->pszNameOrOrdinal) ||
+            //0 ==strcmp("SIM_unlock_display", (PSTR)pDLPDStub->pszNameOrOrdinal) ||
+            //0 ==strcmp("SIM_hwm_gp_outp8", (PSTR)pDLPDStub->pszNameOrOrdinal) ||
+            0 == strcmp("SYS_enter_krnl", (PSTR)pDLPDStub->pszNameOrOrdinal) ||
+            0 == strcmp("SYS_exit_krnl", (PSTR)pDLPDStub->pszNameOrOrdinal) ||
+            0 == strcmp("TSK_pvg_reserve_smphr", (PSTR)pDLPDStub->pszNameOrOrdinal) ||
+            0 == strcmp("TSK_pvg_release_smphr", (PSTR)pDLPDStub->pszNameOrOrdinal) ||
+           
+            
+            false
+            )
+        {
+
+        }else
+        {
+            logMessageEx("###: %s", (PSTR)pDLPDStub->pszNameOrOrdinal);
+            
+        }
+    }
+
+
+    __asm   popad   // Restore all general purpose registers
+}
 
 
 
@@ -60,7 +101,7 @@ bool RedirectIAT( SDLLHook* DLLHook, PIMAGE_IMPORT_DESCRIPTOR pImportDesc, PVOID
     // If no import names table, we can't redirect this, so bail
     if ( pImportDesc->OriginalFirstThunk == 0 )
 	{
-		logMessageEx("--- No import names table!!!,Exit\n" );
+		logMessageEx("^^^ No import names table!!!,Exit\n" );
         return false;
 	}
 
@@ -78,7 +119,7 @@ bool RedirectIAT( SDLLHook* DLLHook, PIMAGE_IMPORT_DESCRIPTOR pImportDesc, PVOID
 
     if ( cFuncs == 0 )  // If no imported functions, we're done!
     {
-		logMessageEx("--- No imported functions, we're done\n" );
+		logMessageEx("^^^ No imported functions, we're done\n" );
 		return false;
 	}
 
@@ -98,7 +139,7 @@ bool RedirectIAT( SDLLHook* DLLHook, PIMAGE_IMPORT_DESCRIPTOR pImportDesc, PVOID
     if ( !VirtualProtect(   pIAT, sizeof(PVOID) * cFuncs,
                             flNewProtect, &flOldProtect) )
     {
-		logMessageEx("--- VirtualProtect error we're done\n" );
+		logMessageEx("^^^ VirtualProtect error we're done\n" );
     }
 
     // If the Default hook is enabled, build an array of redirection stubs in the processes memory.
@@ -124,8 +165,17 @@ bool RedirectIAT( SDLLHook* DLLHook, PIMAGE_IMPORT_DESCRIPTOR pImportDesc, PVOID
         {
             PIMAGE_IMPORT_BY_NAME pImportName = MakePtr( PIMAGE_IMPORT_BY_NAME, pBaseLoadAddr, pINT->u1.AddressOfData );
 
-			//logMessageEx("--- pImportName=%s", (char*)pImportName->Name);
+			//logMessageEx("^^^ pImportName=%s", (char*)pImportName->Name);
 			char* importName = (char*)pImportName->Name ;
+
+//#pragma warning FIXME
+            if(0 == strcmp(importName, "SIM_intf"))
+            {
+                pIteratingIAT++;    // Advance to next IAT entry
+                pINT++;             // Advance to next INT entry
+
+                continue;
+            }
 
             // Iterate through the hook functions, searching for this import.
             SFunctionHook* FHook = DLLHook->Functions;
@@ -134,7 +184,7 @@ bool RedirectIAT( SDLLHook* DLLHook, PIMAGE_IMPORT_DESCRIPTOR pImportDesc, PVOID
             {
                 if ( lstrcmpi( FHook->Name, importName ) == 0 )
                 {
-					logMessageEx("--- Hooked function %s at %08x", importName, (void*)(pIteratingIAT->u1.Function ));
+					logMessageEx("^^^ Hooked function %s at %08x", importName, (void*)(pIteratingIAT->u1.Function ));
 
                     // Save the old function in the SFunctionHook structure and get the new one.
                     FHook->OrigFn = (void*)(pIteratingIAT->u1.Function);
@@ -174,7 +224,7 @@ bool RedirectIAT( SDLLHook* DLLHook, PIMAGE_IMPORT_DESCRIPTOR pImportDesc, PVOID
 				HookFn = (void*)pStubs;
 
 
-			    logMessageEx("--- %s data_call = %08x, data_JMP=%08x", 
+			    logMessageEx("^^^ %s data_call = %08x, data_JMP=%08x", 
 							    (char*)pStubs->pszNameOrOrdinal ,
 							    pStubs->data_call,
 							    pStubs->data_JMP
@@ -230,13 +280,15 @@ bool HookAPICallsMod( SDLLHook* Hook , HMODULE mod)
 
     HMODULE hModEXE = mod;//GetModuleHandle( 0 );
 
+    logMessageEx("^^^ HookAPICallsMod %s", Hook->Name );
+
 
 
     PIMAGE_NT_HEADERS pExeNTHdr = PEHeaderFromHModule( hModEXE );
     
     if ( !pExeNTHdr )
 	{
-		logMessageEx("--- PEHeaderFromHModule Error " );
+		logMessageEx("^^^ PEHeaderFromHModule Error " );
         return false;
 	}
 
@@ -244,7 +296,7 @@ bool HookAPICallsMod( SDLLHook* Hook , HMODULE mod)
                         [IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
     if ( !importRVA )
 	{
-		logMessageEx("--- importRVA Error importRVA=%08x", importRVA);
+		logMessageEx("^^^ importRVA Error importRVA=%08x", importRVA);
         return false;
 	}
 
@@ -261,11 +313,11 @@ bool HookAPICallsMod( SDLLHook* Hook , HMODULE mod)
 
         PSTR pszImportModuleName = MakePtr( PSTR, hModEXE, pImportDesc->Name);
 
-		//logMessageEx("--- Module %s in module 0x%08x", pszImportModuleName, hModEXE);
+		//logMessageEx("^^^ Module %s in module 0x%08x", pszImportModuleName, hModEXE);
 
         if ( lstrcmpi( pszImportModuleName, Hook->Name ) == 0 )
         {
-			//logMessageEx("--- Found %s in module 0x%08x", Hook->Name, hModEXE);
+			//logMessageEx("^^^ Found %s in module 0x%08x", Hook->Name, hModEXE);
 
             RedirectIAT( Hook, pImportDesc, (PVOID)hModEXE );
         }
@@ -292,7 +344,7 @@ bool EnumImportModules( ModuleCallback_t cb , HMODULE mod)
     
     if ( !pExeNTHdr )
 	{
-		logMessageEx("--- PEHeaderFromHModule Error " );
+		logMessageEx("^^^ PEHeaderFromHModule Error " );
         return false;
 	}
 
@@ -300,7 +352,7 @@ bool EnumImportModules( ModuleCallback_t cb , HMODULE mod)
                         [IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
     if ( !importRVA )
 	{
-		logMessageEx("--- importRVA Error importRVA=%08x", importRVA);
+		logMessageEx("^^^ importRVA Error importRVA=%08x", importRVA);
         return false;
 	}
 
@@ -317,7 +369,7 @@ bool EnumImportModules( ModuleCallback_t cb , HMODULE mod)
 
         PSTR pszImportModuleName = MakePtr( PSTR, hModEXE, pImportDesc->Name);
 
-		logMessageEx("--- Module %s in module 0x%08x", pszImportModuleName, hModEXE);
+		logMessageEx("^^^ Module %s in module 0x%08x", pszImportModuleName, hModEXE);
 		if(NULL != cb)
 		{
 			cb(pszImportModuleName);

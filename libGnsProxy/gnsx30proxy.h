@@ -48,6 +48,17 @@ public:
     unsigned long getNAVStandbyFrequency() { return m_navStandby;};
     void  setNAVStandbyFrequency(unsigned long freq);
 
+
+    //GPS functions
+    //latitude; //radians
+    //longitude; //radians
+    //speed; //m/s
+    //heading; //0=> pi, -pi=>0
+    //verticalSpeed; //0=>
+    //altitude; // m
+    void  setGPSInfo(double	latitude, double longitude, float speed, float	heading, float verticalSpeed, float altitude);
+
+
 private:
     //COM/NAV frequencies
     unsigned long           m_comActive;

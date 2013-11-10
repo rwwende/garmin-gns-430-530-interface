@@ -112,7 +112,7 @@ typedef struct _SharedObjShr
 typedef struct _GNSIntf
 {
 	// must be first
-	unsigned long LDC_data[OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT]; // this should eb the exact size as the BITMAP_WIDTH in the info
+	unsigned long LCD_data[OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT]; // this should eb the exact size as the BITMAP_WIDTH in the info
     unsigned long lcd_width;
     unsigned long lcd_height;
     bool          LCDUpdated;
@@ -125,7 +125,7 @@ typedef struct _GNSIntf
     unsigned long bezel_lcd_width;
     unsigned long bezel_lcd_height;
 
-    unsigned long Bezel_data[OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT]; // this should eb the exact size as the BITMAP_WIDTH in the info
+    unsigned long Bezel_data[OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT]; // this should be the exact size as the BITMAP_WIDTH in the info
     bool          BezelUpdated;
 
     

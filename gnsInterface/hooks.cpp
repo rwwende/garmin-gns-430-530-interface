@@ -207,14 +207,14 @@ void Hooks::processUdpData(void* pData, int dataSize)
             {
                 FreqInfo* pFreqInfo = (FreqInfo*)pData;
                 ComHooks::instanace()->setActiveFrequency(pFreqInfo->freq);
-                logMessageEx("--- Hooks::processUdpData MSG_COM_ACTIVE pFreqInfo->freq %d", pFreqInfo->freq);
+                //logMessageEx("--- Hooks::processUdpData MSG_COM_ACTIVE pFreqInfo->freq %d", pFreqInfo->freq);
                 break;
             }
         case MSG_COM_STANDBY:
             {
                 FreqInfo* pFreqInfo = (FreqInfo*)pData;
                 ComHooks::instanace()->setStandbyFrequency(pFreqInfo->freq);
-                logMessageEx("--- Hooks::processUdpData MSG_COM_STANDBY pFreqInfo->freq %d", pFreqInfo->freq);
+                //logMessageEx("--- Hooks::processUdpData MSG_COM_STANDBY pFreqInfo->freq %d", pFreqInfo->freq);
 
                 break;
             }
@@ -222,14 +222,14 @@ void Hooks::processUdpData(void* pData, int dataSize)
             {
                 FreqInfo* pFreqInfo = (FreqInfo*)pData;
                 NavHooks::instanace()->setActiveFrequency(pFreqInfo->freq);
-                logMessageEx("--- Hooks::processUdpData MSG_NAV_ACTIVE pFreqInfo->freq %d", pFreqInfo->freq);
+                //logMessageEx("--- Hooks::processUdpData MSG_NAV_ACTIVE pFreqInfo->freq %d", pFreqInfo->freq);
                 break;
             }
         case MSG_NAV_STANDBY:
             {
                 FreqInfo* pFreqInfo = (FreqInfo*)pData;
                 NavHooks::instanace()->setStandbyFrequency(pFreqInfo->freq);
-                logMessageEx("--- Hooks::processUdpData MSG_NAV_STANDBY pFreqInfo->freq %d", pFreqInfo->freq);
+                //logMessageEx("--- Hooks::processUdpData MSG_NAV_STANDBY pFreqInfo->freq %d", pFreqInfo->freq);
 
                 break;
             }
@@ -242,7 +242,7 @@ void Hooks::processUdpData(void* pData, int dataSize)
                                                      pGPSInfo->heading,
                                                      pGPSInfo->verticalSpeed,
                                                      pGPSInfo->altitude);
-                logMessageEx("--- Hooks::processUdpData MSG_GPS_INFO");
+                //logMessageEx("--- Hooks::processUdpData MSG_GPS_INFO");
 
                 break;
             }

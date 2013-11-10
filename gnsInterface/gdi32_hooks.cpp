@@ -10,7 +10,7 @@ static HANDLE memMap = NULL;
 
 //GDI
 HBITMAP my_bitmap = NULL;
-HDC		top_dc = NULL; // this is the DC of the LDC window.BitBlt to this D will be interecpted
+HDC		top_dc = NULL; // this is the DC of the LCD window.BitBlt to this D will be interecpted
 HDC		my_dc = NULL;
 
 typedef int (WINAPI *ChoosePixelFormat_t)(HDC hdc, const PIXELFORMATDESCRIPTOR *ppfd);

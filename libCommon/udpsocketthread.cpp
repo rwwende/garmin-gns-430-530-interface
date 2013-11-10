@@ -40,7 +40,7 @@ void UdpSocketThread::run()
         if(r > 0)
         {
             //data received
-            logMessageEx("--- UdpSocketThread::run r=%d", r);
+            //logMessageEx("--- UdpSocketThread::run r=%d", r);
             if(NULL != m_callback)
             {
                 m_callback(data, r, m_pCallbackContext);

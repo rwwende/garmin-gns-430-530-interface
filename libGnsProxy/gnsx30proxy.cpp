@@ -269,7 +269,7 @@ bool GNSx30Proxy::initialize(bool hideGUI)
 
 	m_pvData = m_pShared->get();
 
-	memset(m_pvData->LDC_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
+	memset(m_pvData->LCD_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
     memset(m_pvData->Bezel_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
 
     m_state = stateInitialized;
@@ -373,7 +373,7 @@ bool GNSx30Proxy::open(int gnsType)
 
 
 
-	memset(m_pvData->LDC_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
+	memset(m_pvData->LCD_data,0x00, OFFSCREEN_BUFFER_WIDTH*OFFSCREEN_BUFFER_HEIGHT*4);
 
     startAndInject(m_trainter_exe, m_trainter_path, m_interface_lib, m_hideGUI);
 
@@ -499,7 +499,7 @@ void GNSx30Proxy::processUdpData(void* pData, int dataSize)
             {
                 FreqInfo* pFreqInfo = (FreqInfo*)pData;
                 m_comActive = pFreqInfo->freq;
-                logMessageEx("--- GNSx30Proxy::processUdpData m_comActive %d", m_comActive);
+                //logMessageEx("--- GNSx30Proxy::processUdpData m_comActive %d", m_comActive);
                 break;
             }
             case MSG_COM_STANDBY:
@@ -507,7 +507,7 @@ void GNSx30Proxy::processUdpData(void* pData, int dataSize)
                 FreqInfo* pFreqInfo = (FreqInfo*)pData;
                 m_comStandby = pFreqInfo->freq;
 
-                logMessageEx("--- GNSx30Proxy::processUdpData m_comStandby %d", m_comStandby);
+                //logMessageEx("--- GNSx30Proxy::processUdpData m_comStandby %d", m_comStandby);
 
                 break;
             }
@@ -515,7 +515,7 @@ void GNSx30Proxy::processUdpData(void* pData, int dataSize)
                 {
                     FreqInfo* pFreqInfo = (FreqInfo*)pData;
                     m_navActive = pFreqInfo->freq;
-                    logMessageEx("--- GNSx30Proxy::processUdpData m_navActive %d", m_comActive);
+                    //logMessageEx("--- GNSx30Proxy::processUdpData m_navActive %d", m_comActive);
                     break;
                 }
             case MSG_NAV_STANDBY:
@@ -523,7 +523,7 @@ void GNSx30Proxy::processUdpData(void* pData, int dataSize)
                     FreqInfo* pFreqInfo = (FreqInfo*)pData;
                     m_navStandby = pFreqInfo->freq;
 
-                    logMessageEx("--- GNSx30Proxy::processUdpData m_navStandby %d", m_comStandby);
+                    //logMessageEx("--- GNSx30Proxy::processUdpData m_navStandby %d", m_comStandby);
 
                     break;
                 }

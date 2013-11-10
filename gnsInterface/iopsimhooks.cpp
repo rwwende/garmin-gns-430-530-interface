@@ -154,7 +154,7 @@ unsigned long IopSimHooks::TSK_pvg_send_msg_ex(unsigned long p1, unsigned long p
     lock();
 
 
-    logMessageEx("--- IopSimHooks::TSK_pvg_send_msg_ex IN %08x, %08x", p1, p2);
+    //logMessageEx("--- IopSimHooks::TSK_pvg_send_msg_ex IN %08x, %08x", p1, p2);
 
     if(0x12 == p1)
     {
@@ -288,13 +288,13 @@ void  IopSimHooks::setGPSInfo(double	latitude, double longitude, float speed, fl
     m_altitude = altitude;
 
 
-    logMessageEx("--- IopSimHooks::setGPSInfo %f, %f, %f %f %f, %f", 
-                   m_latitude,
-                   m_longitude,
-                   m_speed,
-                   m_heading, 
-                   m_verticalSpeed,
-                   m_altitude);
+    //logMessageEx("--- IopSimHooks::setGPSInfo %f, %f, %f %f %f, %f", 
+    //               m_latitude,
+    //               m_longitude,
+    //               m_speed,
+    //               m_heading, 
+    //               m_verticalSpeed,
+    //               m_altitude);
 
     unlock();
 }

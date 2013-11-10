@@ -16,6 +16,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gnsTest1", "gnsTest1\gnsTes
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGnsProxy", "libGnsProxy\libGnsProxy.vcproj", "{392D54F6-46C7-4115-8C84-448507A9426A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gnsPlugin", "gnsPlugin\gnsPlugin.vcproj", "{C6C628AB-2238-425B-A35C-22DB0D0E52CB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D107B5C-2707-4C09-AF80-B11F0A17931F} = {4D107B5C-2707-4C09-AF80-B11F0A17931F}
+		{392D54F6-46C7-4115-8C84-448507A9426A} = {392D54F6-46C7-4115-8C84-448507A9426A}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -38,6 +44,10 @@ Global
 		{392D54F6-46C7-4115-8C84-448507A9426A}.Debug|Win32.Build.0 = Debug|Win32
 		{392D54F6-46C7-4115-8C84-448507A9426A}.Release|Win32.ActiveCfg = Release|Win32
 		{392D54F6-46C7-4115-8C84-448507A9426A}.Release|Win32.Build.0 = Release|Win32
+		{C6C628AB-2238-425B-A35C-22DB0D0E52CB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C6C628AB-2238-425B-A35C-22DB0D0E52CB}.Debug|Win32.Build.0 = Debug|Win32
+		{C6C628AB-2238-425B-A35C-22DB0D0E52CB}.Release|Win32.ActiveCfg = Release|Win32
+		{C6C628AB-2238-425B-A35C-22DB0D0E52CB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

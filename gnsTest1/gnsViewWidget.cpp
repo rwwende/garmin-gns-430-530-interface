@@ -141,7 +141,7 @@ void GnsViewWidget::paintGL()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pGNSIntf->lcd_width, pGNSIntf->lcd_height, 0, GL_BGR, GL_UNSIGNED_BYTE, pGNSIntf->LDC_data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pGNSIntf->lcd_width, pGNSIntf->lcd_height, 0, GL_BGR, GL_UNSIGNED_BYTE, pGNSIntf->LCD_data);
 
             pGNSIntf->LCDUpdated = false;
 

@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget* pParent, Qt::WFlags flags)
     
     ui.setupUi(this);
     
-    bool hideGNSWindow = false; //Sety this to true to hide the GNS window
+    bool hideGNSWindow = false; //Set this to true to hide the GNS window
     m_GNSx30Proxy.initialize(hideGNSWindow);
 
     //GNSIntf* pIntf = m_GNSx30Proxy.getInterface();

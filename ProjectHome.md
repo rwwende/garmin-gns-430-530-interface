@@ -1,0 +1,1 @@
+Garmin GNS 430/530 WAAS Trainer Interface for flight simulators
